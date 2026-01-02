@@ -1,0 +1,2255 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="La Réserve">
+    <meta name="description" content="Créez des actions de détournement institutionnel">
+    
+    <title>La Réserve</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'><rect fill='%231a1a2e' width='180' height='180' rx='40'/><circle fill='%236366f1' cx='90' cy='90' r='45'/></svg>">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ============================================
+           CSS VARIABLES
+           ============================================ */
+        :root {
+            /* Colors */
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --primary-pale: rgba(99, 102, 241, 0.1);
+            
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            
+            --bg-app: #0f0f1a;
+            --bg-card: #1a1a2e;
+            --bg-elevated: #252540;
+            --bg-input: #16162b;
+            
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b8;
+            --text-muted: #6b6b80;
+            
+            --border: rgba(255, 255, 255, 0.08);
+            --border-focus: rgba(99, 102, 241, 0.5);
+            
+            /* Typography */
+            --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --font-display: 'Space Grotesk', sans-serif;
+            --font-mono: 'JetBrains Mono', monospace;
+            
+            /* Spacing */
+            --safe-top: env(safe-area-inset-top, 0px);
+            --safe-bottom: env(safe-area-inset-bottom, 0px);
+            --safe-left: env(safe-area-inset-left, 0px);
+            --safe-right: env(safe-area-inset-right, 0px);
+            
+            --nav-height: 60px;
+            --header-height: 56px;
+            
+            /* Radius */
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.4);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.5);
+        }
+
+        /* Light theme */
+        [data-theme="light"] {
+            --bg-app: #f5f5f7;
+            --bg-card: #ffffff;
+            --bg-elevated: #ffffff;
+            --bg-input: #f0f0f5;
+            --text-primary: #1a1a2e;
+            --text-secondary: #6b6b80;
+            --text-muted: #a0a0b8;
+            --border: rgba(0, 0, 0, 0.08);
+            --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 12px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 24px rgba(0,0,0,0.12);
+        }
+
+        /* ============================================
+           RESET & BASE (Mobile First)
+           ============================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            font-size: 16px;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background: var(--bg-app);
+            color: var(--text-primary);
+            height: 100%;
+            overflow: hidden;
+            overscroll-behavior: none;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ============================================
+           APP SHELL
+           ============================================ */
+        .app {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            height: 100dvh;
+            padding-top: var(--safe-top);
+            padding-bottom: calc(var(--nav-height) + var(--safe-bottom));
+        }
+
+        /* Header */
+        .app-header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: var(--header-height);
+            padding: 0 1rem;
+            background: var(--bg-card);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .app-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .app-logo-dot {
+            width: 10px;
+            height: 10px;
+            background: var(--primary);
+            border-radius: 50%;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .header-btn {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .header-btn:active {
+            transform: scale(0.95);
+            background: var(--primary-pale);
+        }
+
+        /* Main Content */
+        .app-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        /* Bottom Navigation */
+        .app-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-around;
+            align-items: stretch;
+            height: calc(var(--nav-height) + var(--safe-bottom));
+            padding-bottom: var(--safe-bottom);
+            background: var(--bg-card);
+            border-top: 1px solid var(--border);
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 0.25rem;
+            padding: 0.5rem;
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-family: var(--font-sans);
+            font-size: 0.65rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-item:active {
+            transform: scale(0.95);
+        }
+
+        .nav-icon {
+            font-size: 1.4rem;
+            line-height: 1;
+        }
+
+        .nav-item.active .nav-icon {
+            transform: scale(1.1);
+        }
+
+        /* Create button (center) */
+        .nav-create {
+            position: relative;
+            top: -12px;
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            border: none;
+            border-radius: 50%;
+            color: white;
+            font-size: 1.8rem;
+            box-shadow: 0 4px 16px rgba(99, 102, 241, 0.4);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-create:active {
+            transform: scale(0.95);
+        }
+
+        /* ============================================
+           SCREENS / PANELS
+           ============================================ */
+        .screen {
+            display: none;
+            min-height: 100%;
+            padding: 1rem;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .screen.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ============================================
+           CARDS
+           ============================================ */
+        .card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .card + .card {
+            margin-top: 1rem;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .card-title {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-body {
+            padding: 1rem;
+        }
+
+        .card-footer {
+            padding: 1rem;
+            border-top: 1px solid var(--border);
+            background: var(--bg-elevated);
+        }
+
+        /* ============================================
+           FORMS
+           ============================================ */
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .form-label .required {
+            color: var(--danger);
+        }
+
+        .form-input,
+        .form-select,
+        .form-textarea {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            font-family: var(--font-sans);
+            font-size: 1rem;
+            color: var(--text-primary);
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            outline: none;
+            transition: all 0.2s;
+            -webkit-appearance: none;
+        }
+
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-pale);
+        }
+
+        .form-textarea {
+            min-height: 120px;
+            resize: vertical;
+            line-height: 1.6;
+        }
+
+        .form-select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23a0a0b8' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1rem;
+            padding-right: 2.5rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 0.75rem;
+        }
+
+        .form-row .form-group {
+            flex: 1;
+        }
+
+        /* ============================================
+           BUTTONS
+           ============================================ */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.5rem;
+            font-family: var(--font-sans);
+            font-size: 0.95rem;
+            font-weight: 500;
+            border: none;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s;
+            -webkit-appearance: none;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-secondary {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--text-secondary);
+        }
+
+        .btn-block {
+            width: 100%;
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+        }
+
+        .btn-icon {
+            width: 44px;
+            height: 44px;
+            padding: 0;
+            border-radius: var(--radius-md);
+        }
+
+        /* ============================================
+           BADGES
+           ============================================ */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            border-radius: 100px;
+            background: var(--primary-pale);
+            color: var(--primary-light);
+        }
+
+        .badge-success { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
+        .badge-warning { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+        .badge-danger { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+        .badge-info { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
+
+        /* ============================================
+           TABS
+           ============================================ */
+        .tabs {
+            display: flex;
+            gap: 0.25rem;
+            padding: 0.25rem;
+            background: var(--bg-elevated);
+            border-radius: var(--radius-md);
+            margin-bottom: 1rem;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 0.625rem 0.5rem;
+            font-family: var(--font-sans);
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: var(--text-muted);
+            background: transparent;
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .tab.active {
+            background: var(--bg-card);
+            color: var(--text-primary);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+            animation: fadeIn 0.2s ease;
+        }
+
+        /* ============================================
+           LISTS
+           ============================================ */
+        .list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .list-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem;
+            background: var(--bg-elevated);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .list-item:active {
+            background: var(--primary-pale);
+        }
+
+        .list-item-icon {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-card);
+            border-radius: var(--radius-sm);
+            font-size: 1.2rem;
+        }
+
+        .list-item-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .list-item-title {
+            font-weight: 500;
+            font-size: 0.95rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .list-item-subtitle {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.125rem;
+        }
+
+        .list-item-action {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+        }
+
+        /* ============================================
+           MARKDOWN EDITOR (Mobile)
+           ============================================ */
+        .md-editor-mobile {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .md-toolbar-mobile {
+            display: flex;
+            gap: 0.25rem;
+            padding: 0.5rem;
+            overflow-x: auto;
+            background: var(--bg-elevated);
+            border-bottom: 1px solid var(--border);
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .md-toolbar-mobile::-webkit-scrollbar {
+            display: none;
+        }
+
+        .md-tool-btn {
+            flex-shrink: 0;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        .md-tool-btn:active {
+            background: var(--primary-pale);
+            border-color: var(--primary);
+        }
+
+        .md-input-mobile {
+            width: 100%;
+            min-height: 200px;
+            padding: 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.6;
+            color: var(--text-primary);
+            background: var(--bg-input);
+            border: none;
+            resize: none;
+            outline: none;
+        }
+
+        .md-preview-mobile {
+            padding: 1rem;
+            min-height: 200px;
+            background: var(--bg-card);
+        }
+
+        /* ============================================
+           FILE ACTIONS (Mobile)
+           ============================================ */
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.75rem;
+        }
+
+        .file-btn-mobile {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.375rem;
+            padding: 0.875rem 0.5rem;
+            background: var(--bg-elevated);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .file-btn-mobile:active {
+            background: var(--primary-pale);
+            transform: scale(0.95);
+        }
+
+        .file-btn-mobile .icon {
+            font-size: 1.5rem;
+        }
+
+        .file-btn-mobile .label {
+            font-size: 0.65rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* ============================================
+           RECRUES & TIMELINE (Mobile)
+           ============================================ */
+        .item-card {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            padding: 1rem;
+            background: var(--bg-elevated);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+            margin-bottom: 0.75rem;
+        }
+
+        .item-card-icon {
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: var(--radius-md);
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .item-card-icon.reelle { background: rgba(34, 197, 94, 0.15); }
+        .item-card-icon.fictive { background: rgba(168, 85, 247, 0.15); }
+        .item-card-icon.moi { background: rgba(59, 130, 246, 0.15); }
+        .item-card-icon.fonction { background: rgba(249, 115, 22, 0.15); }
+
+        .item-card-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .item-card-title {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .item-card-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+
+        .item-card-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .item-card-actions button {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            cursor: pointer;
+        }
+
+        /* ============================================
+           PREVIEW (Mobile)
+           ============================================ */
+        .preview-frame-mobile {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .preview-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1rem;
+            background: var(--bg-elevated);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .preview-dots {
+            display: flex;
+            gap: 0.375rem;
+        }
+
+        .preview-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+
+        .preview-dot.red { background: #ff5f56; }
+        .preview-dot.yellow { background: #ffbd2e; }
+        .preview-dot.green { background: #27ca40; }
+
+        .preview-url {
+            flex: 1;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        .preview-iframe-mobile {
+            width: 100%;
+            height: 400px;
+            border: none;
+            background: white;
+        }
+
+        /* ============================================
+           MODALS (Mobile)
+           ============================================ */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            display: none;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .modal-overlay.open {
+            display: flex;
+        }
+
+        .modal-sheet {
+            width: 100%;
+            max-height: 90vh;
+            background: var(--bg-card);
+            border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+            padding-bottom: var(--safe-bottom);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+
+        .modal-handle {
+            width: 40px;
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            margin: 0.75rem auto;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 1rem 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-title {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--bg-elevated);
+            border: none;
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        .modal-body {
+            padding: 1rem;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        /* ============================================
+           EMPTY STATES
+           ============================================ */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1.5rem;
+        }
+
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .empty-state-title {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .empty-state-text {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+        }
+
+        /* ============================================
+           ACTION CARD (Home)
+           ============================================ */
+        .action-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .action-card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+        }
+
+        .action-card-title {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .action-card-meta {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        .action-card-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            margin-bottom: 0.75rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .action-card-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .action-card-stats {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+        }
+
+        /* ============================================
+           THEME SWITCHER (Mobile)
+           ============================================ */
+        .theme-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.75rem;
+        }
+
+        .theme-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: var(--bg-elevated);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .theme-option.active {
+            border-color: var(--primary);
+            background: var(--primary-pale);
+        }
+
+        .theme-option-icon {
+            font-size: 1.5rem;
+        }
+
+        .theme-option-name {
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        /* ============================================
+           TOAST NOTIFICATIONS
+           ============================================ */
+        .toast-container {
+            position: fixed;
+            top: calc(var(--safe-top) + var(--header-height) + 1rem);
+            left: 1rem;
+            right: 1rem;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            pointer-events: none;
+        }
+
+        .toast {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.875rem 1rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            pointer-events: auto;
+            animation: toastIn 0.3s ease;
+        }
+
+        .toast.hide {
+            animation: toastOut 0.3s ease forwards;
+        }
+
+        @keyframes toastIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes toastOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-20px); }
+        }
+
+        .toast-icon {
+            font-size: 1.2rem;
+        }
+
+        .toast-message {
+            flex: 1;
+            font-size: 0.9rem;
+        }
+
+        /* ============================================
+           LOADING
+           ============================================ */
+        .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ============================================
+           DESKTOP ENHANCEMENTS
+           ============================================ */
+        @media (min-width: 768px) {
+            :root {
+                --nav-height: 0px;
+            }
+
+            .app {
+                flex-direction: row;
+                padding-bottom: var(--safe-bottom);
+            }
+
+            .app-nav {
+                position: relative;
+                flex-direction: column;
+                width: 80px;
+                height: 100%;
+                border-top: none;
+                border-right: 1px solid var(--border);
+            }
+
+            .nav-item {
+                padding: 1rem 0.5rem;
+            }
+
+            .nav-create {
+                top: 0;
+                width: 48px;
+                height: 48px;
+                margin: 0.5rem 0;
+            }
+
+            .app-content {
+                flex: 1;
+            }
+
+            .screen {
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 2rem;
+            }
+
+            .form-row {
+                gap: 1rem;
+            }
+
+            .file-grid {
+                grid-template-columns: repeat(6, 1fr);
+            }
+
+            .theme-grid {
+                grid-template-columns: repeat(6, 1fr);
+            }
+
+            .modal-sheet {
+                max-width: 500px;
+                margin: auto;
+                border-radius: var(--radius-xl);
+                margin-bottom: 2rem;
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .app-nav {
+                width: 240px;
+                padding: 1rem;
+            }
+
+            .nav-item {
+                flex-direction: row;
+                justify-content: flex-start;
+                gap: 0.75rem;
+                padding: 0.875rem 1rem;
+                border-radius: var(--radius-md);
+                font-size: 0.9rem;
+            }
+
+            .nav-item.active {
+                background: var(--primary-pale);
+            }
+
+            .nav-icon {
+                font-size: 1.2rem;
+            }
+
+            .nav-create {
+                width: 100%;
+                height: auto;
+                border-radius: var(--radius-md);
+                padding: 0.875rem;
+                margin: 1rem 0;
+            }
+
+            .screen {
+                max-width: 900px;
+            }
+        }
+
+        /* ============================================
+           UTILITIES
+           ============================================ */
+        .hidden { display: none !important; }
+        .text-center { text-align: center; }
+        .text-muted { color: var(--text-muted); }
+        .mt-1 { margin-top: 0.5rem; }
+        .mt-2 { margin-top: 1rem; }
+        .mb-1 { margin-bottom: 0.5rem; }
+        .mb-2 { margin-bottom: 1rem; }
+        .gap-1 { gap: 0.5rem; }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .justify-between { justify-content: space-between; }
+    </style>
+</head>
+<body data-theme="dark">
+    <div class="app">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="app-logo">
+                <span class="app-logo-dot"></span>
+                <span>LA RÉSERVE</span>
+            </div>
+            <div class="header-actions">
+                <button class="header-btn" onclick="openSettings()">⚙️</button>
+                <button class="header-btn" onclick="toggleTheme()">🌓</button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="app-content">
+            <!-- HOME SCREEN -->
+            <div class="screen active" id="screen-home">
+                <h2 style="font-family: var(--font-display); font-size: 1.5rem; margin-bottom: 1rem;">
+                    Vos actions
+                </h2>
+
+                <div id="actionsListHome">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📄</div>
+                        <div class="empty-state-title">Aucune action</div>
+                        <div class="empty-state-text">Créez votre première action de détournement</div>
+                        <button class="btn btn-primary" onclick="navigateTo('create')">
+                            <span>+</span> Nouvelle action
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CREATE SCREEN -->
+            <div class="screen" id="screen-create">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">📝 Nouvelle action</div>
+                    </div>
+                    <div class="card-body">
+                        <!-- Tabs -->
+                        <div class="tabs">
+                            <button class="tab active" data-tab="info" onclick="switchCreateTab('info')">Infos</button>
+                            <button class="tab" data-tab="content" onclick="switchCreateTab('content')">Contenu</button>
+                            <button class="tab" data-tab="recrues" onclick="switchCreateTab('recrues')">Recrues</button>
+                            <button class="tab" data-tab="timeline" onclick="switchCreateTab('timeline')">Timeline</button>
+                        </div>
+
+                        <!-- Info Tab -->
+                        <div class="tab-content active" id="tab-info">
+                            <div class="form-group">
+                                <label class="form-label">Titre <span class="required">*</span></label>
+                                <input type="text" class="form-input" id="inputTitre" placeholder="Ex: Coordinateur·rice de silences">
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Pseudonyme</label>
+                                    <input type="text" class="form-input" id="inputPseudo" placeholder="Anonyme">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Lieu</label>
+                                    <input type="text" class="form-input" id="inputLieu" placeholder="Bruxelles">
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label class="form-label">Type</label>
+                                    <select class="form-select" id="inputType">
+                                        <option value="">— Choisir —</option>
+                                        <option value="offre">📋 Offre d'emploi</option>
+                                        <option value="silence">🔇 Silence</option>
+                                        <option value="procedure">📑 Procédure</option>
+                                        <option value="site">🌐 Site web</option>
+                                        <option value="autre">📎 Autre</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">Statut</label>
+                                    <select class="form-select" id="inputStatut">
+                                        <option value="en-cours">🟡 En cours</option>
+                                        <option value="soumis">🔵 Soumis</option>
+                                        <option value="valide">🟢 Validé</option>
+                                        <option value="refuse">🔴 Refusé</option>
+                                        <option value="bascule">🌟 Basculé</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Content Tab -->
+                        <div class="tab-content" id="tab-content">
+                            <div class="form-group">
+                                <label class="form-label">Description (Markdown)</label>
+                                <div class="md-editor-mobile">
+                                    <div class="md-toolbar-mobile">
+                                        <button class="md-tool-btn" onclick="mdInsertMobile('**', '**')"><b>B</b></button>
+                                        <button class="md-tool-btn" onclick="mdInsertMobile('*', '*')"><i>I</i></button>
+                                        <button class="md-tool-btn" onclick="mdInsertLineMobile('# ')">H1</button>
+                                        <button class="md-tool-btn" onclick="mdInsertLineMobile('## ')">H2</button>
+                                        <button class="md-tool-btn" onclick="mdInsertLineMobile('- ')">•</button>
+                                        <button class="md-tool-btn" onclick="mdInsertLineMobile('> ')">❝</button>
+                                        <button class="md-tool-btn" onclick="mdInsertMobile('[', '](url)')">🔗</button>
+                                        <button class="md-tool-btn" onclick="toggleMdPreview()">👁️</button>
+                                    </div>
+                                    <textarea class="md-input-mobile" id="inputDescription" placeholder="Décrivez votre action..."></textarea>
+                                    <div class="md-preview-mobile hidden" id="mdPreviewMobile"></div>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">ASBL visée</label>
+                                <input type="text" class="form-input" id="inputAsbl" placeholder="Nom de l'ASBL">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Lien source</label>
+                                <input type="url" class="form-input" id="inputLienSource" placeholder="https://...">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Lien action</label>
+                                <input type="url" class="form-input" id="inputLienAction" placeholder="https://...">
+                            </div>
+                        </div>
+
+                        <!-- Recrues Tab -->
+                        <div class="tab-content" id="tab-recrues">
+                            <div id="recruesListMobile"></div>
+                            
+                            <button class="btn btn-secondary btn-block" onclick="addRecrueMobile()">
+                                + Ajouter une recrue
+                            </button>
+                        </div>
+
+                        <!-- Timeline Tab -->
+                        <div class="tab-content" id="tab-timeline">
+                            <div id="timelineListMobile"></div>
+                            
+                            <button class="btn btn-secondary btn-block" onclick="addTimelineMobile()">
+                                + Ajouter un événement
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card-footer">
+                        <button class="btn btn-primary btn-block" onclick="saveAndPreview()">
+                            👁️ Prévisualiser
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FILES SCREEN -->
+            <div class="screen" id="screen-files">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">📥 Importer</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="file-grid">
+                            <button class="file-btn-mobile" onclick="importFileMobile('json')">
+                                <span class="icon">📦</span>
+                                <span class="label">JSON</span>
+                            </button>
+                            <button class="file-btn-mobile" onclick="importFileMobile('md')">
+                                <span class="icon">📝</span>
+                                <span class="label">MD</span>
+                            </button>
+                            <button class="file-btn-mobile" onclick="importFileMobile('yaml')">
+                                <span class="icon">⚙️</span>
+                                <span class="label">YAML</span>
+                            </button>
+                            <button class="file-btn-mobile" onclick="importFileMobile('csv')">
+                                <span class="icon">📊</span>
+                                <span class="label">CSV</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">📤 Exporter</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="file-grid">
+                            <button class="file-btn-mobile" onclick="exportFileMobile('html')">
+                                <span class="icon">🌐</span>
+                                <span class="label">HTML</span>
+                            </button>
+                            <button class="file-btn-mobile" onclick="exportFileMobile('json')">
+                                <span class="icon">📦</span>
+                                <span class="label">JSON</span>
+                            </button>
+                            <button class="file-btn-mobile" onclick="exportFileMobile('md')">
+                                <span class="icon">📝</span>
+                                <span class="label">MD</span>
+                            </button>
+                            <button class="file-btn-mobile" onclick="exportFileMobile('pdf')">
+                                <span class="icon">📕</span>
+                                <span class="label">PDF</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">⚡ Actions rapides</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="list">
+                            <div class="list-item" onclick="copyToClipboardMobile('json')">
+                                <div class="list-item-icon">📋</div>
+                                <div class="list-item-content">
+                                    <div class="list-item-title">Copier JSON</div>
+                                    <div class="list-item-subtitle">Presse-papier</div>
+                                </div>
+                                <div class="list-item-action">›</div>
+                            </div>
+                            <div class="list-item" onclick="generateQRMobile()">
+                                <div class="list-item-icon">📱</div>
+                                <div class="list-item-content">
+                                    <div class="list-item-title">QR Code</div>
+                                    <div class="list-item-subtitle">Générer un QR</div>
+                                </div>
+                                <div class="list-item-action">›</div>
+                            </div>
+                            <div class="list-item" onclick="shareAction()">
+                                <div class="list-item-icon">🔗</div>
+                                <div class="list-item-content">
+                                    <div class="list-item-title">Partager</div>
+                                    <div class="list-item-subtitle">Réseaux sociaux</div>
+                                </div>
+                                <div class="list-item-action">›</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PREVIEW SCREEN -->
+            <div class="screen" id="screen-preview">
+                <div class="preview-frame-mobile">
+                    <div class="preview-bar">
+                        <div class="preview-dots">
+                            <span class="preview-dot red"></span>
+                            <span class="preview-dot yellow"></span>
+                            <span class="preview-dot green"></span>
+                        </div>
+                        <div class="preview-url" id="previewUrl">action.html</div>
+                        <button class="btn btn-ghost btn-sm" onclick="refreshPreviewMobile()">🔄</button>
+                    </div>
+                    <iframe class="preview-iframe-mobile" id="previewIframeMobile"></iframe>
+                </div>
+
+                <div class="flex gap-1 mt-2">
+                    <button class="btn btn-secondary" style="flex:1" onclick="navigateTo('create')">
+                        ✏️ Modifier
+                    </button>
+                    <button class="btn btn-primary" style="flex:1" onclick="downloadHTMLMobile()">
+                        💾 Télécharger
+                    </button>
+                </div>
+            </div>
+
+            <!-- SETTINGS SCREEN -->
+            <div class="screen" id="screen-settings">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">🎨 Thème</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="theme-grid">
+                            <div class="theme-option active" data-theme="dark" onclick="setTheme('dark')">
+                                <span class="theme-option-icon">🌙</span>
+                                <span class="theme-option-name">Sombre</span>
+                            </div>
+                            <div class="theme-option" data-theme="light" onclick="setTheme('light')">
+                                <span class="theme-option-icon">☀️</span>
+                                <span class="theme-option-name">Clair</span>
+                            </div>
+                            <div class="theme-option" data-theme="neon" onclick="setTheme('neon')">
+                                <span class="theme-option-icon">💜</span>
+                                <span class="theme-option-name">Néon</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">📖 À propos</div>
+                    </div>
+                    <div class="card-body">
+                        <p style="font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6;">
+                            <strong>La Réserve</strong> est un système ARG (Alternate Reality Game) 
+                            qui permet de créer des actions de détournement institutionnel.
+                        </p>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 1rem;">
+                            Version 1.0 • Mobile PWA
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">🗑️ Données</div>
+                    </div>
+                    <div class="card-body">
+                        <button class="btn btn-secondary btn-block" onclick="clearAllData()">
+                            Effacer toutes les données
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Bottom Navigation -->
+        <nav class="app-nav">
+            <button class="nav-item active" data-screen="home" onclick="navigateTo('home')">
+                <span class="nav-icon">🏠</span>
+                <span>Accueil</span>
+            </button>
+            <button class="nav-item" data-screen="files" onclick="navigateTo('files')">
+                <span class="nav-icon">📁</span>
+                <span>Fichiers</span>
+            </button>
+            <button class="nav-create" onclick="navigateTo('create')">+</button>
+            <button class="nav-item" data-screen="preview" onclick="navigateTo('preview')">
+                <span class="nav-icon">👁️</span>
+                <span>Aperçu</span>
+            </button>
+            <button class="nav-item" data-screen="settings" onclick="navigateTo('settings')">
+                <span class="nav-icon">⚙️</span>
+                <span>Réglages</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal-overlay" id="recrueModal">
+        <div class="modal-sheet">
+            <div class="modal-handle"></div>
+            <div class="modal-header">
+                <div class="modal-title">Ajouter une recrue</div>
+                <button class="modal-close" onclick="closeModal('recrueModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Nom</label>
+                    <input type="text" class="form-input" id="modalRecrueName" placeholder="Nom de la recrue">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Type</label>
+                    <select class="form-select" id="modalRecrueType">
+                        <option value="reelle">👤 Réelle</option>
+                        <option value="fictive">🎭 Fictive</option>
+                        <option value="moi">🪞 Moi-même</option>
+                        <option value="fonction">💼 Fonction</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Rôle</label>
+                    <input type="text" class="form-input" id="modalRecrueRole" placeholder="Rôle dans l'action">
+                </div>
+                <button class="btn btn-primary btn-block mt-2" onclick="confirmAddRecrue()">
+                    Ajouter
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="timelineModal">
+        <div class="modal-sheet">
+            <div class="modal-handle"></div>
+            <div class="modal-header">
+                <div class="modal-title">Ajouter un événement</div>
+                <button class="modal-close" onclick="closeModal('timelineModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label class="form-label">Date</label>
+                    <input type="date" class="form-input" id="modalTimelineDate">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Type</label>
+                    <select class="form-select" id="modalTimelineType">
+                        <option value="creation">🚀 Création</option>
+                        <option value="soumission">📨 Soumission</option>
+                        <option value="reponse">📬 Réponse</option>
+                        <option value="silence">🔇 Silence</option>
+                        <option value="validation">✅ Validation</option>
+                        <option value="refus">❌ Refus</option>
+                        <option value="basculement">🌟 Basculement</option>
+                        <option value="autre">📝 Autre</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" id="modalTimelineDesc" placeholder="Détails de l'événement" rows="3"></textarea>
+                </div>
+                <button class="btn btn-primary btn-block mt-2" onclick="confirmAddTimeline()">
+                    Ajouter
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Hidden file input -->
+    <input type="file" id="fileInput" style="display: none;">
+
+    <script>
+        // ============================================
+        // APP STATE
+        // ============================================
+        let currentScreen = 'home';
+        let recrues = [];
+        let timeline = [];
+        let actions = JSON.parse(localStorage.getItem('lareserve-actions') || '[]');
+
+        // ============================================
+        // PWA & SERVICE WORKER
+        // ============================================
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('SW registered'))
+                .catch(err => console.log('SW registration failed'));
+        }
+
+        // ============================================
+        // NAVIGATION
+        // ============================================
+        function navigateTo(screen) {
+            currentScreen = screen;
+            
+            // Update screens
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById(`screen-${screen}`).classList.add('active');
+            
+            // Update nav
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            const navItem = document.querySelector(`.nav-item[data-screen="${screen}"]`);
+            if (navItem) navItem.classList.add('active');
+
+            // Special actions
+            if (screen === 'preview') {
+                refreshPreviewMobile();
+            }
+            if (screen === 'home') {
+                renderActionsList();
+            }
+        }
+
+        // ============================================
+        // THEME
+        // ============================================
+        function toggleTheme() {
+            const current = document.body.getAttribute('data-theme');
+            setTheme(current === 'dark' ? 'light' : 'dark');
+        }
+
+        function setTheme(theme) {
+            document.body.setAttribute('data-theme', theme);
+            localStorage.setItem('lareserve-theme', theme);
+            
+            // Update theme options
+            document.querySelectorAll('.theme-option').forEach(opt => {
+                opt.classList.toggle('active', opt.dataset.theme === theme);
+            });
+        }
+
+        // Load saved theme
+        const savedTheme = localStorage.getItem('lareserve-theme') || 'dark';
+        setTheme(savedTheme);
+
+        // ============================================
+        // TABS
+        // ============================================
+        function switchCreateTab(tab) {
+            document.querySelectorAll('.tabs .tab').forEach(t => {
+                t.classList.toggle('active', t.dataset.tab === tab);
+            });
+            document.querySelectorAll('.tab-content').forEach(c => {
+                c.classList.toggle('active', c.id === `tab-${tab}`);
+            });
+        }
+
+        // ============================================
+        // MARKDOWN
+        // ============================================
+        function mdInsertMobile(before, after) {
+            const textarea = document.getElementById('inputDescription');
+            const start = textarea.selectionStart;
+            const end = textarea.selectionEnd;
+            const text = textarea.value;
+            const selected = text.substring(start, end);
+            textarea.value = text.substring(0, start) + before + selected + after + text.substring(end);
+            textarea.focus();
+            textarea.setSelectionRange(start + before.length, start + before.length + selected.length);
+        }
+
+        function mdInsertLineMobile(prefix) {
+            const textarea = document.getElementById('inputDescription');
+            const start = textarea.selectionStart;
+            const text = textarea.value;
+            const lineStart = text.lastIndexOf('\n', start - 1) + 1;
+            textarea.value = text.substring(0, lineStart) + prefix + text.substring(lineStart);
+            textarea.focus();
+        }
+
+        function toggleMdPreview() {
+            const input = document.querySelector('.md-input-mobile');
+            const preview = document.getElementById('mdPreviewMobile');
+            
+            if (preview.classList.contains('hidden')) {
+                preview.innerHTML = parseMarkdown(document.getElementById('inputDescription').value);
+                preview.classList.remove('hidden');
+                input.classList.add('hidden');
+            } else {
+                preview.classList.add('hidden');
+                input.classList.remove('hidden');
+            }
+        }
+
+        function parseMarkdown(text) {
+            if (!text) return '<p style="color: var(--text-muted)">Aperçu...</p>';
+            return text
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/^### (.*$)/gm, '<h3>$1</h3>')
+                .replace(/^## (.*$)/gm, '<h2>$1</h2>')
+                .replace(/^# (.*$)/gm, '<h1>$1</h1>')
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.+?)\*/g, '<em>$1</em>')
+                .replace(/^- (.*$)/gm, '<li>$1</li>')
+                .replace(/^> (.*$)/gm, '<blockquote>$1</blockquote>')
+                .replace(/\[([^\]]+)\]\(([^\)]+)\)/g, '<a href="$2">$1</a>')
+                .replace(/\n/g, '<br>');
+        }
+
+        // ============================================
+        // RECRUES
+        // ============================================
+        const recrueTypeConfig = {
+            'reelle': { icon: '👤', label: 'Réelle' },
+            'fictive': { icon: '🎭', label: 'Fictive' },
+            'moi': { icon: '🪞', label: 'Moi-même' },
+            'fonction': { icon: '💼', label: 'Fonction' }
+        };
+
+        function renderRecruesMobile() {
+            const list = document.getElementById('recruesListMobile');
+            if (recrues.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state" style="padding: 2rem;">
+                        <div class="empty-state-icon">👥</div>
+                        <div class="empty-state-text">Aucune recrue</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            list.innerHTML = recrues.map((r, i) => {
+                const config = recrueTypeConfig[r.type] || recrueTypeConfig.reelle;
+                return `
+                    <div class="item-card">
+                        <div class="item-card-icon ${r.type}">${config.icon}</div>
+                        <div class="item-card-content">
+                            <div class="item-card-title">${r.nom || 'Sans nom'}</div>
+                            <div class="item-card-meta">${config.label} • ${r.role || 'Pas de rôle'}</div>
+                        </div>
+                        <div class="item-card-actions">
+                            <button onclick="removeRecrue(${i})">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function addRecrueMobile() {
+            document.getElementById('modalRecrueName').value = '';
+            document.getElementById('modalRecrueType').value = 'reelle';
+            document.getElementById('modalRecrueRole').value = '';
+            document.getElementById('recrueModal').classList.add('open');
+        }
+
+        function confirmAddRecrue() {
+            const nom = document.getElementById('modalRecrueName').value.trim();
+            if (!nom) {
+                showToast('Nom requis', 'warning');
+                return;
+            }
+            
+            recrues.push({
+                nom,
+                type: document.getElementById('modalRecrueType').value,
+                role: document.getElementById('modalRecrueRole').value.trim()
+            });
+            
+            renderRecruesMobile();
+            closeModal('recrueModal');
+            showToast('Recrue ajoutée', 'success');
+        }
+
+        function removeRecrue(index) {
+            recrues.splice(index, 1);
+            renderRecruesMobile();
+        }
+
+        // ============================================
+        // TIMELINE
+        // ============================================
+        const timelineTypeConfig = {
+            'creation': { icon: '🚀', label: 'Création' },
+            'soumission': { icon: '📨', label: 'Soumission' },
+            'reponse': { icon: '📬', label: 'Réponse' },
+            'silence': { icon: '🔇', label: 'Silence' },
+            'validation': { icon: '✅', label: 'Validation' },
+            'refus': { icon: '❌', label: 'Refus' },
+            'basculement': { icon: '🌟', label: 'Basculement' },
+            'autre': { icon: '📝', label: 'Autre' }
+        };
+
+        function renderTimelineMobile() {
+            const list = document.getElementById('timelineListMobile');
+            if (timeline.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state" style="padding: 2rem;">
+                        <div class="empty-state-icon">📅</div>
+                        <div class="empty-state-text">Aucun événement</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            list.innerHTML = timeline.map((t, i) => {
+                const config = timelineTypeConfig[t.type] || timelineTypeConfig.autre;
+                return `
+                    <div class="item-card">
+                        <div class="item-card-icon">${config.icon}</div>
+                        <div class="item-card-content">
+                            <div class="item-card-title">${t.date || 'Sans date'}</div>
+                            <div class="item-card-meta">${config.label} • ${t.description || ''}</div>
+                        </div>
+                        <div class="item-card-actions">
+                            <button onclick="removeTimeline(${i})">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function addTimelineMobile() {
+            document.getElementById('modalTimelineDate').value = new Date().toISOString().split('T')[0];
+            document.getElementById('modalTimelineType').value = 'creation';
+            document.getElementById('modalTimelineDesc').value = '';
+            document.getElementById('timelineModal').classList.add('open');
+        }
+
+        function confirmAddTimeline() {
+            const date = document.getElementById('modalTimelineDate').value;
+            if (!date) {
+                showToast('Date requise', 'warning');
+                return;
+            }
+            
+            timeline.push({
+                date,
+                type: document.getElementById('modalTimelineType').value,
+                description: document.getElementById('modalTimelineDesc').value.trim()
+            });
+            
+            renderTimelineMobile();
+            closeModal('timelineModal');
+            showToast('Événement ajouté', 'success');
+        }
+
+        function removeTimeline(index) {
+            timeline.splice(index, 1);
+            renderTimelineMobile();
+        }
+
+        // ============================================
+        // MODALS
+        // ============================================
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('open');
+        }
+
+        // Close modal on backdrop click
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.classList.remove('open');
+                }
+            });
+        });
+
+        // ============================================
+        // DATA
+        // ============================================
+        function getFormDataMobile() {
+            const description = document.getElementById('inputDescription').value || '';
+            return {
+                id: 'LR-' + Math.random().toString(36).substr(2, 9).toUpperCase(),
+                titre: document.getElementById('inputTitre').value || 'Sans titre',
+                pseudo: document.getElementById('inputPseudo').value || 'Anonyme',
+                lieu: document.getElementById('inputLieu').value || '',
+                type: document.getElementById('inputType').value || '',
+                statut: document.getElementById('inputStatut').value || 'en-cours',
+                description: description,
+                descriptionHtml: parseMarkdown(description),
+                asbl: document.getElementById('inputAsbl').value || '',
+                lienSource: document.getElementById('inputLienSource').value || '',
+                lienAction: document.getElementById('inputLienAction').value || '',
+                recrues: recrues,
+                timeline: timeline,
+                theme: 'dark',
+                style: 'elegant',
+                createdAt: new Date().toISOString()
+            };
+        }
+
+        function saveAndPreview() {
+            const data = getFormDataMobile();
+            if (!data.titre || data.titre === 'Sans titre') {
+                showToast('Titre requis', 'warning');
+                return;
+            }
+            
+            // Save to localStorage
+            localStorage.setItem('lareserve-current', JSON.stringify(data));
+            
+            navigateTo('preview');
+        }
+
+        // ============================================
+        // PREVIEW
+        // ============================================
+        function refreshPreviewMobile() {
+            const data = JSON.parse(localStorage.getItem('lareserve-current') || 'null') || getFormDataMobile();
+            const html = generateActionPageMobile(data);
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            
+            document.getElementById('previewIframeMobile').src = url;
+            document.getElementById('previewUrl').textContent = `action-${data.id.toLowerCase()}.html`;
+        }
+
+        function generateActionPageMobile(data) {
+            // Simplified action page generator
+            return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${data.titre} | La Réserve</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@600&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0f0f1a;
+            color: #fff;
+            padding: 2rem;
+            line-height: 1.6;
+        }
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        .meta {
+            color: #a0a0b8;
+            margin-bottom: 2rem;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background: rgba(99, 102, 241, 0.2);
+            color: #818cf8;
+            border-radius: 100px;
+            font-size: 0.85rem;
+            margin-right: 0.5rem;
+        }
+        .description {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background: #1a1a2e;
+            border-radius: 12px;
+        }
+        .section {
+            margin: 2rem 0;
+        }
+        .section h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: #a0a0b8;
+        }
+        .item {
+            padding: 1rem;
+            background: #252540;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+        }
+        footer {
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid #252540;
+            font-size: 0.85rem;
+            color: #6b6b80;
+        }
+    </style>
+</head>
+<body>
+    <h1>${data.titre}</h1>
+    <div class="meta">
+        Par <strong>${data.pseudo}</strong> ${data.lieu ? '• ' + data.lieu : ''}
+    </div>
+    <div>
+        <span class="badge">${data.type || 'Action'}</span>
+        <span class="badge">${data.statut}</span>
+    </div>
+    
+    <div class="description">
+        ${data.descriptionHtml || '<p>Aucune description</p>'}
+    </div>
+    
+    ${data.recrues.length > 0 ? `
+    <div class="section">
+        <h2>Recrues</h2>
+        ${data.recrues.map(r => `
+            <div class="item">
+                <strong>${r.nom}</strong> (${r.type}) — ${r.role || 'Pas de rôle'}
+            </div>
+        `).join('')}
+    </div>
+    ` : ''}
+    
+    ${data.timeline.length > 0 ? `
+    <div class="section">
+        <h2>Timeline</h2>
+        ${data.timeline.map(t => `
+            <div class="item">
+                <strong>${t.date}</strong> — ${t.type} : ${t.description || ''}
+            </div>
+        `).join('')}
+    </div>
+    ` : ''}
+    
+    <footer>
+        Généré par La Réserve • ${new Date(data.createdAt).toLocaleDateString('fr-BE')} • ID: ${data.id}
+    </footer>
+</body>
+</html>`;
+        }
+
+        // ============================================
+        // FILES
+        // ============================================
+        function importFileMobile(format) {
+            const input = document.getElementById('fileInput');
+            input.accept = `.${format}`;
+            input.onchange = (e) => handleImportMobile(e, format);
+            input.click();
+        }
+
+        function handleImportMobile(e, format) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try {
+                    if (format === 'json') {
+                        const data = JSON.parse(ev.target.result);
+                        fillFormFromDataMobile(data);
+                        showToast('Import JSON réussi', 'success');
+                    } else if (format === 'md') {
+                        document.getElementById('inputDescription').value = ev.target.result;
+                        showToast('Import Markdown réussi', 'success');
+                    }
+                    navigateTo('create');
+                } catch (err) {
+                    showToast('Erreur d\'import', 'danger');
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function fillFormFromDataMobile(data) {
+            if (data.titre) document.getElementById('inputTitre').value = data.titre;
+            if (data.pseudo) document.getElementById('inputPseudo').value = data.pseudo;
+            if (data.lieu) document.getElementById('inputLieu').value = data.lieu;
+            if (data.type) document.getElementById('inputType').value = data.type;
+            if (data.statut) document.getElementById('inputStatut').value = data.statut;
+            if (data.description) document.getElementById('inputDescription').value = data.description;
+            if (data.asbl) document.getElementById('inputAsbl').value = data.asbl;
+            if (data.lienSource) document.getElementById('inputLienSource').value = data.lienSource;
+            if (data.lienAction) document.getElementById('inputLienAction').value = data.lienAction;
+            if (data.recrues) { recrues = data.recrues; renderRecruesMobile(); }
+            if (data.timeline) { timeline = data.timeline; renderTimelineMobile(); }
+        }
+
+        function exportFileMobile(format) {
+            const data = getFormDataMobile();
+            let content, filename, mimeType;
+            
+            switch(format) {
+                case 'html':
+                    content = generateActionPageMobile(data);
+                    filename = `action-${data.id.toLowerCase()}.html`;
+                    mimeType = 'text/html';
+                    break;
+                case 'json':
+                    content = JSON.stringify(data, null, 2);
+                    filename = `action-${data.id.toLowerCase()}.json`;
+                    mimeType = 'application/json';
+                    break;
+                case 'md':
+                    content = `# ${data.titre}\n\n${data.description}`;
+                    filename = `action-${data.id.toLowerCase()}.md`;
+                    mimeType = 'text/markdown';
+                    break;
+                case 'pdf':
+                    const html = generateActionPageMobile(data);
+                    const win = window.open('', '_blank');
+                    win.document.write(html);
+                    win.document.close();
+                    win.print();
+                    return;
+            }
+            
+            downloadFileMobile(content, filename, mimeType);
+            showToast(`Export ${format.toUpperCase()} réussi`, 'success');
+        }
+
+        function downloadFileMobile(content, filename, mimeType) {
+            const blob = new Blob([content], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function downloadHTMLMobile() {
+            exportFileMobile('html');
+        }
+
+        function copyToClipboardMobile(format) {
+            const data = getFormDataMobile();
+            let content = format === 'json' ? JSON.stringify(data, null, 2) : data.description;
+            
+            navigator.clipboard.writeText(content).then(() => {
+                showToast('Copié !', 'success');
+            });
+        }
+
+        function generateQRMobile() {
+            const data = getFormDataMobile();
+            const url = `https://votre-site.com/action-${data.id.toLowerCase()}.html`;
+            window.open(`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}`, '_blank');
+        }
+
+        function shareAction() {
+            const data = getFormDataMobile();
+            if (navigator.share) {
+                navigator.share({
+                    title: data.titre,
+                    text: `Découvrez mon action La Réserve : ${data.titre}`,
+                    url: window.location.href
+                });
+            } else {
+                showToast('Partage non supporté', 'warning');
+            }
+        }
+
+        // ============================================
+        // ACTIONS LIST
+        // ============================================
+        function renderActionsList() {
+            const list = document.getElementById('actionsListHome');
+            const actions = JSON.parse(localStorage.getItem('lareserve-actions') || '[]');
+            
+            if (actions.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📄</div>
+                        <div class="empty-state-title">Aucune action</div>
+                        <div class="empty-state-text">Créez votre première action de détournement</div>
+                        <button class="btn btn-primary" onclick="navigateTo('create')">
+                            <span>+</span> Nouvelle action
+                        </button>
+                    </div>
+                `;
+                return;
+            }
+            
+            list.innerHTML = actions.map((action, i) => `
+                <div class="action-card" onclick="loadAction(${i})">
+                    <div class="action-card-header">
+                        <div>
+                            <div class="action-card-title">${action.titre}</div>
+                            <div class="action-card-meta">${action.pseudo} • ${new Date(action.createdAt).toLocaleDateString('fr-BE')}</div>
+                        </div>
+                        <span class="badge">${action.statut}</span>
+                    </div>
+                    <div class="action-card-desc">${action.description?.substring(0, 100) || 'Pas de description'}...</div>
+                    <div class="action-card-footer">
+                        <div class="action-card-stats">
+                            <span>👥 ${action.recrues?.length || 0}</span>
+                            <span>📅 ${action.timeline?.length || 0}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function loadAction(index) {
+            const actions = JSON.parse(localStorage.getItem('lareserve-actions') || '[]');
+            const action = actions[index];
+            if (action) {
+                fillFormFromDataMobile(action);
+                localStorage.setItem('lareserve-current', JSON.stringify(action));
+                navigateTo('create');
+            }
+        }
+
+        // ============================================
+        // SETTINGS
+        // ============================================
+        function openSettings() {
+            navigateTo('settings');
+        }
+
+        function clearAllData() {
+            if (confirm('Effacer toutes les données ?')) {
+                localStorage.clear();
+                location.reload();
+            }
+        }
+
+        // ============================================
+        // TOASTS
+        // ============================================
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toastContainer');
+            const icons = {
+                success: '✅',
+                warning: '⚠️',
+                danger: '❌',
+                info: 'ℹ️'
+            };
+            
+            const toast = document.createElement('div');
+            toast.className = `toast badge-${type}`;
+            toast.innerHTML = `
+                <span class="toast-icon">${icons[type]}</span>
+                <span class="toast-message">${message}</span>
+            `;
+            
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.add('hide');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // ============================================
+        // INIT
+        // ============================================
+        renderRecruesMobile();
+        renderTimelineMobile();
+        renderActionsList();
+
+        // Load draft if exists
+        const draft = localStorage.getItem('lareserve-current');
+        if (draft) {
+            try {
+                fillFormFromDataMobile(JSON.parse(draft));
+            } catch (e) {}
+        }
+    </script>
+</body>
+</html>

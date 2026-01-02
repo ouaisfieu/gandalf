@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="theme-color" content="#6366f1">
+    <meta name="description" content="La Réserve - Créez des actions de détournement institutionnel">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    
+    <title>La Réserve</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --bg: #0a0a12;
+            --bg-card: #12121f;
+            --text: #ffffff;
+            --text-muted: #8888a0;
+            --border: rgba(255,255,255,0.08);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .bg-gradient {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: 
+                radial-gradient(ellipse at 20% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            z-index: -1;
+            animation: pulse 8s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulse { 0% { opacity: 0.8; } 100% { opacity: 1; } }
+
+        .bg-grid {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            z-index: -1;
+        }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 1.5rem; }
+
+        header {
+            padding: 1.5rem 0;
+            position: fixed;
+            top: 0; left: 0; right: 0;
+            z-index: 100;
+            background: rgba(10, 10, 18, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            text-decoration: none;
+            color: var(--text);
+        }
+
+        .logo-dot {
+            width: 12px;
+            height: 12px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes glow {
+            0% { box-shadow: 0 0 5px var(--primary), 0 0 10px var(--primary); }
+            100% { box-shadow: 0 0 10px var(--primary), 0 0 20px var(--primary), 0 0 30px var(--primary); }
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover { color: var(--text); }
+
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 6rem 1.5rem 4rem;
+        }
+
+        .hero-content { max-width: 800px; }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 100px;
+            font-size: 0.85rem;
+            color: var(--primary);
+            margin-bottom: 2rem;
+        }
+
+        .hero-badge::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            animation: blink 1.5s ease-in-out infinite;
+        }
+
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(3rem, 8vw, 5rem);
+            font-weight: 700;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #fff 0%, #a0a0ff 50%, #fff 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% auto;
+            animation: shine 4s linear infinite;
+        }
+
+        @keyframes shine { to { background-position: 200% center; } }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem 2rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 1rem;
+            font-weight: 500;
+            text-decoration: none;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .versions {
+            padding: 6rem 0;
+        }
+
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            margin-bottom: 3rem;
+        }
+
+        .versions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .version-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .version-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), #8b5cf6);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .version-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .version-card:hover::before { opacity: 1; }
+
+        .version-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .version-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .version-desc {
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+        }
+
+        .version-features {
+            list-style: none;
+            margin-bottom: 2rem;
+        }
+
+        .version-features li {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 0;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+        }
+
+        .version-features li::before {
+            content: '✓';
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        .features {
+            padding: 6rem 0;
+            background: linear-gradient(180deg, transparent 0%, rgba(99, 102, 241, 0.03) 50%, transparent 100%);
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: rgba(99, 102, 241, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-desc {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .cta {
+            padding: 8rem 0;
+            text-align: center;
+            background: linear-gradient(180deg, transparent 0%, rgba(99, 102, 241, 0.1) 100%);
+        }
+
+        .cta h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2rem, 5vw, 3rem);
+            margin-bottom: 1.5rem;
+        }
+
+        .cta p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        footer {
+            padding: 3rem 0;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .hero { padding: 5rem 1rem 3rem; }
+            .hero-actions { flex-direction: column; }
+            .btn { width: 100%; justify-content: center; }
+            .versions-grid { grid-template-columns: 1fr; }
+        }
+
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s ease;
+        }
+
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-gradient"></div>
+    <div class="bg-grid"></div>
+
+    <header>
+        <div class="container header-inner">
+            <a href="/" class="logo">
+                <span class="logo-dot"></span>
+                LA RÉSERVE
+            </a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#versions">Versions</a></li>
+                    <li><a href="#features">Fonctionnalités</a></li>
+                    <li><a href="la-reserve-v10.html">Ouvrir l'app</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-content">
+                <div class="hero-badge">Système ouvert depuis 2025</div>
+                <h1>La Réserve</h1>
+                <p class="hero-subtitle">
+                    Ce qui existe déjà mais n'a jamais été reconnu.<br>
+                    Créez des actions de détournement institutionnel.
+                </p>
+                <div class="hero-actions">
+                    <a href="la-reserve-v10.html" class="btn btn-primary">
+                        💻 Version Desktop
+                    </a>
+                    <a href="la-reserve-app.html" class="btn btn-secondary">
+                        📱 Version Mobile
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <section class="versions" id="versions">
+            <div class="container">
+                <h2 class="section-title reveal">Choisissez votre version</h2>
+                <p class="section-subtitle reveal">Deux interfaces, un même système</p>
+
+                <div class="versions-grid">
+                    <div class="version-card reveal">
+                        <div class="version-icon">💻</div>
+                        <h3 class="version-title">Desktop</h3>
+                        <p class="version-desc">
+                            Interface complète avec toutes les fonctionnalités avancées.
+                        </p>
+                        <ul class="version-features">
+                            <li>6 thèmes visuels + 6 typographies</li>
+                            <li>Éditeur Markdown complet</li>
+                            <li>Gestionnaire de fichiers multi-format</li>
+                            <li>Prévisualisation iframe en direct</li>
+                            <li>Templates de démarrage</li>
+                            <li>README intégré</li>
+                        </ul>
+                        <a href="la-reserve-v10.html" class="btn btn-primary" style="width: 100%;">
+                            Ouvrir Desktop
+                        </a>
+                    </div>
+
+                    <div class="version-card reveal">
+                        <div class="version-icon">📱</div>
+                        <h3 class="version-title">Mobile (PWA)</h3>
+                        <p class="version-desc">
+                            Application installable, fonctionne hors ligne.
+                        </p>
+                        <ul class="version-features">
+                            <li>Interface native tactile</li>
+                            <li>Installation sur l'écran d'accueil</li>
+                            <li>Mode hors ligne complet</li>
+                            <li>Partage natif (Web Share API)</li>
+                            <li>Sauvegarde automatique</li>
+                            <li>QR Code intégré</li>
+                        </ul>
+                        <a href="la-reserve-app.html" class="btn btn-primary" style="width: 100%;">
+                            Ouvrir Mobile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="features" id="features">
+            <div class="container">
+                <h2 class="section-title reveal">Fonctionnalités</h2>
+                <p class="section-subtitle reveal">Tout ce qu'il faut pour créer vos actions</p>
+
+                <div class="features-grid">
+                    <div class="feature-card reveal">
+                        <div class="feature-icon">📝</div>
+                        <h3 class="feature-title">Éditeur Markdown</h3>
+                        <p class="feature-desc">Formatage riche avec aperçu en direct</p>
+                    </div>
+                    <div class="feature-card reveal">
+                        <div class="feature-icon">👥</div>
+                        <h3 class="feature-title">Recrues</h3>
+                        <p class="feature-desc">Réelles, fictives, ou vous-même</p>
+                    </div>
+                    <div class="feature-card reveal">
+                        <div class="feature-icon">📅</div>
+                        <h3 class="feature-title">Timeline</h3>
+                        <p class="feature-desc">Chronologie des événements</p>
+                    </div>
+                    <div class="feature-card reveal">
+                        <div class="feature-icon">🎨</div>
+                        <h3 class="feature-title">Thèmes</h3>
+                        <p class="feature-desc">6 thèmes + 6 typographies</p>
+                    </div>
+                    <div class="feature-card reveal">
+                        <div class="feature-icon">📤</div>
+                        <h3 class="feature-title">Export</h3>
+                        <p class="feature-desc">HTML, JSON, MD, YAML, CSV, PDF</p>
+                    </div>
+                    <div class="feature-card reveal">
+                        <div class="feature-icon">🔒</div>
+                        <h3 class="feature-title">100% Local</h3>
+                        <p class="feature-desc">Aucune donnée envoyée</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta">
+            <div class="container">
+                <h2 class="reveal">Prêt à créer votre action ?</h2>
+                <p class="reveal">
+                    Documentez ce qui existe déjà mais n'a jamais été reconnu.
+                </p>
+                <div class="hero-actions reveal">
+                    <a href="la-reserve-v10.html" class="btn btn-primary">💻 Desktop</a>
+                    <a href="la-reserve-app.html" class="btn btn-secondary">📱 Mobile</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>La Réserve — Système ouvert depuis 2025 • <a href="la-reserve-README.md">Documentation</a></p>
+        </div>
+    </footer>
+
+    <script>
+        const reveals = document.querySelectorAll('.reveal');
+        function checkReveal() {
+            reveals.forEach(el => {
+                const top = el.getBoundingClientRect().top;
+                if (top < window.innerHeight - 100) el.classList.add('visible');
+            });
+        }
+        window.addEventListener('scroll', checkReveal);
+        window.addEventListener('load', checkReveal);
+
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('la-reserve-sw.js');
+        }
+    </script>
+</body>
+</html>
